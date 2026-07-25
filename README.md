@@ -30,6 +30,12 @@ docs/                    plan, status, decisions, device notes, test matrix
 The important structural rule: **all decision logic is pure JVM and unit-tested without a
 device.** `android-sensor/app` is a thin shell. See ADR-0001 in `docs/DECISIONS.md`.
 
+## Continuing this work
+
+Sessions 1-11 were built without hardware. Everything remaining needs a Flip5 and an iPhone on
+USB, which means a local session on a Mac: see [`docs/LOCAL_SETUP.md`](docs/LOCAL_SETUP.md) and
+run `bash scripts/doctor.sh`.
+
 ## Build and test
 
 The JVM modules need only a JDK 17+ — no Android SDK, no emulator, no device:

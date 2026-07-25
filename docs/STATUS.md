@@ -4,7 +4,7 @@
 Current session:            Sessions 1-11 complete (software); 12-15 blocked on hardware
 Current objective:          Hand off to a session with a Flip5 and an iPhone attached
 Last known green revision:  HEAD (./gradlew verify passes)
-Verification performed:     ./gradlew verify — 271 JVM tests, 0 failures, ktlint clean
+Verification performed:     ./gradlew verify — 274 JVM tests, 0 failures, ktlint clean
 Physical-device evidence:   NONE. No Flip5, no iPhone, no Android SDK, no Xcode.
 Known failures:             none in the JVM suite
 Blockers:                   Session 0 hardware prep has not been done (user-owned)
@@ -13,7 +13,7 @@ Next exact action:          Session 0, then the two physical protocols in docs/p
 
 ## What is actually verified
 
-`./gradlew verify` compiles, lints and runs **271 tests** across `:android-sensor:core`,
+`./gradlew verify` compiles, lints and runs **274 tests** across `:android-sensor:core`,
 `:protocol` and `:tools:trace-inspector`. Those results are real. They cover:
 
 | Layer | Verified |
@@ -79,6 +79,10 @@ Stated plainly, because these are the things a reader would otherwise assume:
 See `DEFERRED_SESSIONS.md` for what each of 12–15 needs, and what analysis is already done.
 
 ## Next exact action
+
+**This work must continue in a local session on a Mac with both devices on USB.**
+See [`LOCAL_SETUP.md`](LOCAL_SETUP.md) for the handoff, and run `bash scripts/doctor.sh` first —
+it reports what is installed, what is missing, and the exact fix for each gap.
 
 1. **Session 0.** Factory-reset the Flip5, enable USB debugging, verify `adb` and `scrcpy`, record
    the real model and OS versions in `DEVICE_NOTES.md`.
