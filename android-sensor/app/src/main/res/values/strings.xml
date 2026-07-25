@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Flip Trainer Sensor</string>
+    <string name="camera_service_channel">Workout capture</string>
+    <string name="camera_service_title">Flip Trainer is capturing</string>
+    <string name="camera_service_text">Pose analysis is running. Video never leaves this device.</string>
+</resources>

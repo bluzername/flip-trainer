@@ -1,0 +1,26 @@
+# Gradle
+.gradle/
+build/
+local.properties
+
+# Android
+*.apk
+*.aab
+captures/
+.cxx/
+
+# Xcode / XcodeGen
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+.swiftpm/
+
+# Recorded diagnostics pulled off a device. Traces that are intended as fixtures are
+# committed under test-fixtures/ explicitly.
+device-logs/
+*.trace.jsonl
+
+# OS
+.DS_Store
+.kotlin/
