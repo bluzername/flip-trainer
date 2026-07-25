@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "id": "standing_dumbbell_curl",
+  "version": "1.0.0",
+  "name": "Standing dumbbell curl",
+  "instructions": "Stand facing the camera, full upper body in frame, a dumbbell in each hand with arms hanging straight. Curl both weights up together, then lower under control until the arms are straight again.",
+  "preferredView": "FRONT",
+  "laterality": "BILATERAL",
+  "requiredLandmarks": [
+    "LEFT_SHOULDER",
+    "RIGHT_SHOULDER",
+    "LEFT_ELBOW",
+    "RIGHT_ELBOW",
+    "LEFT_WRIST",
+    "RIGHT_WRIST",
+    "LEFT_HIP",
+    "RIGHT_HIP"
+  ],
+  "readiness": {
+    "minLandmarkConfidence": 0.5,
+    "minSubjectHeightFraction": 0.22,
+    "maxSubjectHeightFraction": 0.8,
+    "frameMarginFraction": 0.02,
+    "enforceView": true,
+    "requiredOrientation": "ANY"
+  },
+  "cycle": {
+    "restBelow": 0.15,
+    "outboundAbove": 0.25,
+    "apexAbove": 0.78,
+    "minPeakProgress": 0.8,
+    "minReversalDelta": 0.06,
+    "minPhaseDurationMs": 120,
+    "minRepDurationMs": 600,
+    "maxRepDurationMs": 10000,
+    "repCooldownMs": 250,
+    "maxDropoutMs": 400,
+    "outboundIsConcentric": true
+  },
+  "filter": {
+    "type": "medianEma",
+    "window": 3,
+    "alpha": 0.4
+  },
+  "range": {
+    "restValue": 172.0,
+    "apexValue": 45.0
+  },
+  "cues": [
+    {
+      "id": "incomplete_range",
+      "message": "Curl a little higher — you are stopping short of the top",
+      "threshold": 0.9,
+      "minConfidence": 0.6,
+      "debounceMs": 300,
+      "enabled": true
+    },
+    {
+      "id": "upper_arm_drift",
+      "message": "Your upper arms are swinging forward — keep the elbows under the shoulders",
+      "threshold": 30.0,
+      "minConfidence": 0.6,
+      "debounceMs": 400,
+      "enabled": true
+    }
+  ],
+  "knownLimitations": [
+    "EXPERIMENTAL: no physical validation has been performed. Thresholds are engineering guesses, not measured values.",
+    "Bilateral only. Alternating curls will read as partial repetitions on both arms.",
+    "Upper-arm drift is measured in the image plane, so drift straight towards the camera is invisible from the front view.",
+    "Wrist supination is not measured; a hammer curl scores identically to a supinated curl."
+  ],
+  "unsupportedViews": [
+    "SIDE: the far arm is occluded, and a bilateral average of one visible arm is not a bilateral measurement."
+  ]
+}

@@ -65,15 +65,27 @@ class GeometryTest {
     @Test
     fun `the same physical pose measures the same on portrait and landscape frames`() {
         // The single most important property of the aspect correction.
-        val portrait = SyntheticPose(right = SyntheticPose.LimbState(elbowAngleDeg = 90.0))
-            .frame(0, imageWidth = 720, imageHeight = 1280)
-        val landscape = SyntheticPose(right = SyntheticPose.LimbState(elbowAngleDeg = 90.0))
-            .frame(0, imageWidth = 1280, imageHeight = 720)
+        val portrait =
+            SyntheticPose(right = SyntheticPose.LimbState(elbowAngleDeg = 90.0))
+                .frame(0, imageWidth = 720, imageHeight = 1280)
+        val landscape =
+            SyntheticPose(right = SyntheticPose.LimbState(elbowAngleDeg = 90.0))
+                .frame(0, imageWidth = 1280, imageHeight = 720)
 
         val p =
-            Geometry.jointAngle(portrait, LandmarkType.RIGHT_SHOULDER, LandmarkType.RIGHT_ELBOW, LandmarkType.RIGHT_WRIST)
+            Geometry.jointAngle(
+                portrait,
+                LandmarkType.RIGHT_SHOULDER,
+                LandmarkType.RIGHT_ELBOW,
+                LandmarkType.RIGHT_WRIST,
+            )
         val l =
-            Geometry.jointAngle(landscape, LandmarkType.RIGHT_SHOULDER, LandmarkType.RIGHT_ELBOW, LandmarkType.RIGHT_WRIST)
+            Geometry.jointAngle(
+                landscape,
+                LandmarkType.RIGHT_SHOULDER,
+                LandmarkType.RIGHT_ELBOW,
+                LandmarkType.RIGHT_WRIST,
+            )
         assertNear(p!!, l, 0.01, "elbow angle across aspect ratios")
     }
 
@@ -125,8 +137,9 @@ class GeometryTest {
         val full = SyntheticPose(torso = 0.30).frame(0)
         assertNear(0.30, Geometry.bodyScale(full), 1e-6, "torso-based scale")
 
-        val noHips = SyntheticPose(torso = 0.30, absent = setOf(LandmarkType.LEFT_HIP, LandmarkType.RIGHT_HIP))
-            .frame(0)
+        val noHips =
+            SyntheticPose(torso = 0.30, absent = setOf(LandmarkType.LEFT_HIP, LandmarkType.RIGHT_HIP))
+                .frame(0)
         val fallback = Geometry.bodyScale(noHips)
         assertNotNull(fallback, "must fall back to shoulder width rather than abstaining entirely")
         assertTrue(fallback!! > 0)
@@ -137,7 +150,15 @@ class GeometryTest {
         val dim = SyntheticPose(torso = 0.25, confidence = 0.2f).frame(0)
         val floor = 0.6f
         assertNull(Geometry.point(dim, LandmarkType.LEFT_ELBOW, floor))
-        assertNull(Geometry.jointAngle(dim, LandmarkType.LEFT_SHOULDER, LandmarkType.LEFT_ELBOW, LandmarkType.LEFT_WRIST, floor))
+        assertNull(
+            Geometry.jointAngle(
+                dim,
+                LandmarkType.LEFT_SHOULDER,
+                LandmarkType.LEFT_ELBOW,
+                LandmarkType.LEFT_WRIST,
+                floor,
+            ),
+        )
         assertNull(Geometry.bodyScale(dim, floor))
         assertNull(Geometry.torsoInclination(dim, floor))
         assertNull(Geometry.normalizedDistance(dim, LandmarkType.LEFT_SHOULDER, LandmarkType.LEFT_WRIST, floor))
@@ -147,7 +168,9 @@ class GeometryTest {
     @Test
     fun `a missing landmark abstains rather than defaulting to the origin`() {
         val frame = frameOf(LandmarkType.LEFT_SHOULDER to0 0.4 to0 0.3)
-        assertNull(Geometry.jointAngle(frame, LandmarkType.LEFT_SHOULDER, LandmarkType.LEFT_ELBOW, LandmarkType.LEFT_WRIST))
+        assertNull(
+            Geometry.jointAngle(frame, LandmarkType.LEFT_SHOULDER, LandmarkType.LEFT_ELBOW, LandmarkType.LEFT_WRIST),
+        )
     }
 
     @Test
@@ -160,7 +183,11 @@ class GeometryTest {
     @Test
     fun `visibility aggregate abstains when a landmark is absent entirely`() {
         val frame = SyntheticPose(confidence = 0.8f).frame(0)
-        assertNear(0.8, Geometry.visibilityAggregate(frame, listOf(LandmarkType.LEFT_WRIST, LandmarkType.RIGHT_WRIST)), 1e-6)
+        assertNear(
+            0.8,
+            Geometry.visibilityAggregate(frame, listOf(LandmarkType.LEFT_WRIST, LandmarkType.RIGHT_WRIST)),
+            1e-6,
+        )
 
         val partial = SyntheticPose(absent = setOf(LandmarkType.LEFT_WRIST)).frame(0)
         assertNull(Geometry.visibilityAggregate(partial, listOf(LandmarkType.LEFT_WRIST, LandmarkType.RIGHT_WRIST)))

@@ -160,8 +160,9 @@ object Geometry {
         frame: PoseFrame,
         minConfidence: Float = 0f,
     ): Double? {
-        val shoulders = midpoint(frame, LandmarkType.LEFT_SHOULDER, LandmarkType.RIGHT_SHOULDER, minConfidence)
-            ?: return null
+        val shoulders =
+            midpoint(frame, LandmarkType.LEFT_SHOULDER, LandmarkType.RIGHT_SHOULDER, minConfidence)
+                ?: return null
         val hips = midpoint(frame, LandmarkType.LEFT_HIP, LandmarkType.RIGHT_HIP, minConfidence) ?: return null
         return shoulders.distanceTo(hips)
     }
@@ -233,8 +234,9 @@ object Geometry {
         frame: PoseFrame,
         minConfidence: Float = 0f,
     ): Double? {
-        val shoulders = midpoint(frame, LandmarkType.LEFT_SHOULDER, LandmarkType.RIGHT_SHOULDER, minConfidence)
-            ?: return null
+        val shoulders =
+            midpoint(frame, LandmarkType.LEFT_SHOULDER, LandmarkType.RIGHT_SHOULDER, minConfidence)
+                ?: return null
         val hips = midpoint(frame, LandmarkType.LEFT_HIP, LandmarkType.RIGHT_HIP, minConfidence) ?: return null
         return signedAngleFromVertical(hips, shoulders)
     }

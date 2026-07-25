@@ -18,4 +18,7 @@ dependencies {
 
 application {
     mainClass.set("com.fliptrainer.tools.traceinspector.MainKt")
+    // Without this the installed launcher inherits the platform encoding and mangles non-ASCII
+    // output on a machine that is not already UTF-8.
+    applicationDefaultJvmArgs = listOf("-Dfile.encoding=UTF-8")
 }

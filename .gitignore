@@ -24,3 +24,8 @@ device-logs/
 # OS
 .DS_Store
 .kotlin/
+
+# Synthetic pose traces are regenerated deterministically by the test suite (see
+# test-fixtures/README.md). Only *recorded* traces are committed. The expected-event
+# goldens under test-fixtures/expected-events/ ARE committed — they are the regression signal.
+test-fixtures/pose-traces/*_synthetic_*.jsonl

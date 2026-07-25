@@ -270,14 +270,24 @@ class ReadinessGate(
             if (box.height < requirements.minSubjectHeightFraction) {
                 return ReadinessState(
                     ReadinessStatus.TOO_FAR,
-                    listOf("subject spans %.2f of frame height, need %.2f".format(box.height, requirements.minSubjectHeightFraction)),
+                    listOf(
+                        "subject spans %.2f of frame height, need %.2f".format(
+                            box.height,
+                            requirements.minSubjectHeightFraction,
+                        ),
+                    ),
                     confidence,
                 )
             }
             if (box.height > requirements.maxSubjectHeightFraction) {
                 return ReadinessState(
                     ReadinessStatus.TOO_CLOSE,
-                    listOf("subject spans %.2f of frame height, max %.2f".format(box.height, requirements.maxSubjectHeightFraction)),
+                    listOf(
+                        "subject spans %.2f of frame height, max %.2f".format(
+                            box.height,
+                            requirements.maxSubjectHeightFraction,
+                        ),
+                    ),
                     confidence,
                 )
             }
@@ -305,7 +315,11 @@ class ReadinessGate(
             if (view != null && !requirements.preferredView.isSatisfiedBy(view.view)) {
                 return ReadinessState(
                     ReadinessStatus.WRONG_VIEW,
-                    listOf("looks like ${view.view}, need ${requirements.preferredView} (openness %.2f)".format(view.openness)),
+                    listOf(
+                        "looks like ${view.view}, need ${requirements.preferredView} (openness %.2f)".format(
+                            view.openness,
+                        ),
+                    ),
                     confidence,
                 )
             }

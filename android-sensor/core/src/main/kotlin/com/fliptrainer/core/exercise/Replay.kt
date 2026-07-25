@@ -130,7 +130,8 @@ data class ReplayResult(
 
     private fun describe(payload: EventPayload): String =
         when (payload) {
-            is EventPayload.SessionAccepted -> "sessionAccepted ${payload.exerciseId}@${payload.exerciseDefinitionVersion}"
+            is EventPayload.SessionAccepted ->
+                "sessionAccepted ${payload.exerciseId}@${payload.exerciseDefinitionVersion}"
             is EventPayload.ReadinessChanged -> "readiness ${payload.status} ${payload.details.joinToString(",")}"
             EventPayload.SetStarted -> "setStarted"
             is EventPayload.PhaseChanged -> "phase ${payload.previousPhase}->${payload.phase} (${payload.label})"

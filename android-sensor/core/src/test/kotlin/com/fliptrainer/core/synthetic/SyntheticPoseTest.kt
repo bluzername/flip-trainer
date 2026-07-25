@@ -160,7 +160,11 @@ class SyntheticPoseTest {
 
     @Test
     fun `left and right sides are mirror images when configured identically`() {
-        val frame = SyntheticPose(right = SyntheticPose.LimbState(elbowAngleDeg = 70.0), left = SyntheticPose.LimbState(elbowAngleDeg = 70.0)).frame(0)
+        val frame =
+            SyntheticPose(
+                right = SyntheticPose.LimbState(elbowAngleDeg = 70.0),
+                left = SyntheticPose.LimbState(elbowAngleDeg = 70.0),
+            ).frame(0)
         val leftAngle =
             Geometry.jointAngle(frame, LandmarkType.LEFT_SHOULDER, LandmarkType.LEFT_ELBOW, LandmarkType.LEFT_WRIST)
         val rightAngle =

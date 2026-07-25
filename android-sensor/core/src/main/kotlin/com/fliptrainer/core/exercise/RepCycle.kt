@@ -87,7 +87,20 @@ data class RepCycleConfig(
         }
 }
 
-/** What one completed repetition measured. Durations are milliseconds. */
+/**
+ * What one completed repetition measured. Durations are milliseconds.
+ *
+ * **Durations are threshold-to-threshold, not excursion-to-excursion.** The clock starts when
+ * progress crosses [RepCycleConfig.outboundAbove] and stops when it falls back under
+ * [RepCycleConfig.restBelow], so a reported duration is shorter than the athlete's full movement
+ * time by however long they spent inside the hysteresis band at each end.
+ *
+ * That is deliberate. Timing the true endpoints means detecting zero-velocity instants in a noisy
+ * signal, which is unstable exactly where it matters — at the turnaround. Threshold-to-threshold
+ * is reproducible, and for comparing tempo between repetitions and between sets, reproducible
+ * beats nominally-correct-but-jittery. Any user-facing tempo copy must describe it as such rather
+ * than implying a stopwatch on the whole movement.
+ */
 data class RepMeasurement(
     val repNumber: Int,
     val totalDurationMs: Int,
@@ -222,7 +235,10 @@ class RepCycleDetector(
 
             MovementPhase.START -> {
                 val cooledDown = lastRepCompletedAtMs?.let { timestampMs - it >= config.repCooldownMs } ?: true
-                if (p > config.outboundAbove && cooledDown && direction.direction != DirectionTracker.Direction.FALLING) {
+                if (p > config.outboundAbove &&
+                    cooledDown &&
+                    direction.direction != DirectionTracker.Direction.FALLING
+                ) {
                     beginCycle(timestampMs)
                     transition(MovementPhase.OUTBOUND, timestampMs, signals)
                 }

@@ -1,0 +1,5 @@
+{"sessionId":"golden","sequenceNumber":0,"t":0,"payload":{"type":"sessionAccepted","exerciseId":"standing_dumbbell_curl","exerciseDefinitionVersion":"1.0.0","targetReps":10,"setNumber":1}}
+{"sessionId":"golden","sequenceNumber":1,"t":627,"payload":{"type":"readinessChanged","status":"READY","confidencePerMille":950}}
+{"sessionId":"golden","sequenceNumber":2,"t":627,"payload":{"type":"setStarted"}}
+{"sessionId":"golden","sequenceNumber":3,"t":627,"payload":{"type":"phaseChanged","phase":"START","previousPhase":"IDLE","label":"bottom"}}
+{"sessionId":"golden","sequenceNumber":4,"t":59994,"payload":{"type":"setCompleted","totalReps":0}}

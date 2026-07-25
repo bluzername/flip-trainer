@@ -143,6 +143,16 @@ abstract class BaseExerciseEvaluator(
         get() = debouncers.filterValues { it.isRaised }.keys
 
     /**
+     * Highest progress reached so far in the repetition currently in flight.
+     *
+     * Cues that judge a repetition as a whole — "you stopped short of the top" — need this, and
+     * they need it before the rep finishes, so that the feedback lands during the movement rather
+     * than after it.
+     */
+    protected val currentPeakProgress: Double
+        get() = detector.currentPeakProgress
+
+    /**
      * The scalar this exercise's repetitions are measured on, in its natural units (degrees for a
      * joint angle, body-scale units for a displacement).
      *

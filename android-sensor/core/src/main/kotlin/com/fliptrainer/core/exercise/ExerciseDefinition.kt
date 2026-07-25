@@ -121,7 +121,8 @@ data class RangeSpec(
     }
 
     /** Feature value → progress, clamped to `0..1`. */
-    fun progressOf(featureValue: Double): Double = ((featureValue - restValue) / (apexValue - restValue)).coerceIn(0.0, 1.0)
+    fun progressOf(featureValue: Double): Double =
+        ((featureValue - restValue) / (apexValue - restValue)).coerceIn(0.0, 1.0)
 
     /** Progress → feature value. Used to report thresholds in the units an athlete understands. */
     fun featureAt(progress: Double): Double = restValue + progress * (apexValue - restValue)

@@ -152,7 +152,12 @@ class RepCycleDetectorTest {
 
         assertEquals(0, h.reps.size, "a rep whose middle was never observed must not be counted")
         assertEquals(1, h.aborts.size)
-        assertTrue(h.aborts.single().reason.contains("signal lost"))
+        assertTrue(
+            h.aborts
+                .single()
+                .reason
+                .contains("signal lost"),
+        )
     }
 
     @Test
@@ -184,7 +189,12 @@ class RepCycleDetectorTest {
         h.feed(List(40) { 0.9 }) // held at the top far past the limit
 
         assertEquals(1, h.aborts.size)
-        assertTrue(h.aborts.single().reason.contains("exceeded"))
+        assertTrue(
+            h.aborts
+                .single()
+                .reason
+                .contains("exceeded"),
+        )
         assertEquals(0, h.reps.size)
     }
 
@@ -251,7 +261,13 @@ class RepCycleDetectorTest {
         val h = Harness(config)
         h.feed(listOf(0.0, 0.0), confidence = 0.1) // before the cycle: must not drag it down
         h.feed(cleanRep(), confidence = 0.8)
-        assertEquals(0.8, h.reps.single().measurement.meanConfidence, 0.02)
+        assertEquals(
+            0.8,
+            h.reps
+                .single()
+                .measurement.meanConfidence,
+            0.02,
+        )
     }
 
     @Test
