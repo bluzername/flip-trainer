@@ -11,6 +11,11 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
 }
 
+tasks.withType<Test>().configureEach {
+    systemProperty("fliptrainer.fixtures", rootProject.file("test-fixtures").absolutePath)
+    System.getProperty("fliptrainer.updateGoldens")?.let { systemProperty("fliptrainer.updateGoldens", it) }
+}
+
 protobuf {
     protoc {
         artifact =
