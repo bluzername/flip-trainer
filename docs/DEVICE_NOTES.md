@@ -90,3 +90,18 @@ Consequences, stated plainly:
 - No frame rate, latency, thermal, battery, BLE-range or rep-accuracy number in this repository
   was measured on hardware. Every such field above reads NOT MEASURED and must stay that way
   until a human runs the device protocol.
+
+### One prediction worth checking early
+
+Not a measurement — an implication of the geometry, recorded so it can be confirmed or killed
+quickly on the real device.
+
+At the mid-point of a dumbbell shoulder press the hands are roughly **2.4 torso-lengths apart**
+(shoulder half-width 0.42 + upper arm 0.62 + forearm 0.54, doubled). A 9:16 portrait frame is only
+0.5625 frame-heights wide, so the athlete must stand back until the torso spans under about 0.22
+of frame height — which is close to that exercise's readiness floor of 0.18.
+
+If that holds on the Flip5, the shoulder press has the tightest framing budget in the catalog.
+**Check landscape orientation before concluding anything about ultrawide** — a wider frame is the
+cheap fix, and plan §13's ultrawide trigger requires a documented failure that placement and
+orientation cannot solve. Run 0 and run 11 of `protocols/catalog-physical-test.md` cover this.
