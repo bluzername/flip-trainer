@@ -33,10 +33,9 @@ Galaxy should stay on the charger — a camera pipeline plus BLE advertising dra
 # 1. Claude Code, locally
 npm install -g @anthropic-ai/claude-code
 
-# 2. The repo, on the branch this work lives on
-git clone https://github.com/bluzername/bee-api-experiments.git
-cd bee-api-experiments
-git checkout claude/plan-execution-p62uzr
+# 2. The repo
+git clone https://github.com/bluzername/flip-trainer.git
+cd flip-trainer
 
 # 3. Toolchains
 brew install --cask temurin                      # JDK 21
@@ -46,16 +45,16 @@ brew install scrcpy xcodegen                     # phone control + iOS project g
 sudo xcode-select -s /Applications/Xcode.app
 
 # 4. Point the build at the SDK (either works; local.properties is gitignored)
-echo "sdk.dir=$(brew --prefix)/share/android-commandlinetools" > flip-trainer/local.properties
+echo "sdk.dir=$(brew --prefix)/share/android-commandlinetools" > local.properties
 sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
 # 5. The MediaPipe model — not committed, and the app crashes without it
-cd flip-trainer/android-sensor/app/src/main/assets
+cd android-sensor/app/src/main/assets
 curl -LO https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task
 cd -
 
 # 6. Check everything at once
-cd flip-trainer && bash scripts/doctor.sh
+bash scripts/doctor.sh
 ```
 
 `doctor.sh` prints a ✓/✗ for each dependency with the exact fix command, reads the model and
@@ -65,14 +64,9 @@ the ordered next steps. Run it first in every local session.
 ## Starting the session
 
 ```bash
-cd bee-api-experiments/flip-trainer
+cd flip-trainer
 claude
 ```
-
-Start it **inside `flip-trainer/`**, not at the repository root. The root `CLAUDE.md` describes
-beelake — a completely different project that shares the repository — and a session started there
-loads the wrong context. `flip-trainer/CLAUDE.md` exists to override it, but starting in the
-subdirectory is cleaner.
 
 Opening prompt that matches the operating protocol in `AGENTS.md`:
 
@@ -136,9 +130,9 @@ The unpair receiver is exported and unauthenticated by design, because a phone w
 digitizer has no other recovery path. That trade-off is written up in `RecoveryReceiver`'s class
 documentation and needs revisiting before this is anything but a personal project.
 
-## Optional: give Flip Trainer its own repository
+## Repository history
 
-It currently lives inside `bee-api-experiments`, which is otherwise a Python Bee-wearable data
-lake. They share nothing. Splitting it out with `git subtree split --prefix=flip-trainer` would
-give it a clean root, its own CI, and remove the wrong-`CLAUDE.md` trap entirely. Worth doing
-before the catalog expands — say so and it can be done in one step.
+This project was developed inside `bluzername/bee-api-experiments` as a subdirectory, because that
+session was scoped to a single repository, and extracted with `git subtree split` once Sessions
+1-11 were done. All 11 original commits are preserved. The two projects share no code, and the
+old nested copy was never merged to that repository's `main`.

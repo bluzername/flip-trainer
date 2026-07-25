@@ -34,14 +34,13 @@ device.** `android-sensor/app` is a thin shell. See ADR-0001 in `docs/DECISIONS.
 
 Sessions 1-11 were built without hardware. Everything remaining needs a Flip5 and an iPhone on
 USB, which means a local session on a Mac: see [`docs/LOCAL_SETUP.md`](docs/LOCAL_SETUP.md) and
-run `bash scripts/doctor.sh`.
+run `bash scripts/doctor.sh` first.
 
 ## Build and test
 
 The JVM modules need only a JDK 17+ — no Android SDK, no emulator, no device:
 
 ```bash
-cd flip-trainer
 ./gradlew verify              # compile + ktlint + all unit tests
 ./gradlew :android-sensor:core:test
 ./gradlew :protocol:test
