@@ -1,0 +1,241 @@
+// Flip Trainer wire protocol, version 1.
+//
+// Normative definition of everything that crosses BLE between the Galaxy sensor (peripheral) and
+// the iPhone controller (central).
+//
+// What deliberately does NOT appear here, and must never be added (plan §4.4): camera frames,
+// video previews, full-rate pose landmarks, model tensors, frame-by-frame diagnostic traces.
+// BLE carries decisions and status, not pixels.
+//
+// Compatibility: `protocol_version` is checked before anything else is interpreted. A mismatch is
+// a clean, reportable rejection, never a best-effort parse.
+
+syntax = "proto3";
+
+package fliptrainer.v1;
+
+option java_package = "com.fliptrainer.protocol.v1";
+option java_multiple_files = true;
+option java_outer_classname = "FlipTrainerProto";
+
+// ---------------------------------------------------------------------------
+// Pairing. These three messages are exchanged BEFORE a paired key exists, so
+// they are not wrapped in an AuthenticatedEnvelope.
+//
+// The QR secret itself never appears on the wire — only proofs of possession.
+// ---------------------------------------------------------------------------
+
+// Peripheral -> central, on connection while unpaired.
+message PairingChallenge {
+  uint32 protocol_version = 1;
+  string device_id = 2;
+  // Identifies which QR code this challenge belongs to. Not secret.
+  string pairing_id = 3;
+  // Fresh per connection attempt. 16 bytes.
+  bytes server_nonce = 4;
+}
+
+// Central -> peripheral. Proves possession of the QR secret without sending it.
+message PairingProof {
+  uint32 protocol_version = 1;
+  bytes client_nonce = 2;
+  // HMAC-SHA256 over the domain-separated transcript. 32 bytes.
+  bytes client_proof = 3;
+}
+
+// Peripheral -> central. On success carries the peripheral's own proof, so the
+// central can confirm it is talking to the device that generated the QR.
+message PairingResult {
+  bool accepted = 1;
+  bytes server_proof = 2;
+  // Machine-readable failure cause; empty when accepted.
+  string reason = 3;
+}
+
+// Authenticated request to forget the paired controller and return to QR mode.
+message UnpairCommand {
+  string reason = 1;
+}
+
+// ---------------------------------------------------------------------------
+// Post-pairing transport
+// ---------------------------------------------------------------------------
+
+// Wraps every message exchanged after pairing.
+//
+// The MAC covers the version, the direction, the counter and the payload, so a
+// message cannot be replayed, reflected back at its sender, or reinterpreted
+// under a different protocol version.
+message AuthenticatedEnvelope {
+  uint32 protocol_version = 1;
+  // 0 = peripheral->central, 1 = central->peripheral. Prevents reflection.
+  uint32 direction = 2;
+  // Strictly increasing per direction. A counter at or below the highest seen
+  // is rejected as a replay.
+  uint64 counter = 3;
+  // Serialized Frame.
+  bytes payload = 4;
+  // Truncated HMAC-SHA256 under the paired key. 16 bytes.
+  bytes mac = 5;
+}
+
+message Frame {
+  oneof body {
+    DeviceCapability device_capability = 1;
+    SessionManifestMessage session_manifest = 2;
+    SessionCommand session_command = 3;
+    ReadinessUpdate readiness_update = 4;
+    WorkoutEventMessage workout_event = 5;
+    DeviceStatus device_status = 6;
+    Acknowledgement acknowledgement = 7;
+    ReplayRequest replay_request = 8;
+    ProtocolError error = 9;
+    UnpairCommand unpair = 10;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Session control
+// ---------------------------------------------------------------------------
+
+message DeviceCapability {
+  uint32 protocol_version = 1;
+  string device_id = 2;
+  string app_version = 3;
+  string pose_model_version = 4;
+  // Exercise ids this build can evaluate, with the definition version each.
+  repeated SupportedExercise supported_exercises = 5;
+  uint32 max_payload_bytes = 6;
+}
+
+message SupportedExercise {
+  string exercise_id = 1;
+  string definition_version = 2;
+}
+
+// The complete set description. Once accepted the Galaxy can finish the set
+// with no controller attached (plan §4.3), so everything the evaluator needs
+// must be in here.
+message SessionManifestMessage {
+  string session_id = 1;
+  string exercise_id = 2;
+  string exercise_definition_version = 3;
+  uint32 target_reps = 4;
+  uint32 set_number = 5;
+  double dumbbell_weight = 6;
+  WeightUnit weight_unit = 7;
+  Laterality laterality = 8;
+  CameraView preferred_view = 9;
+  uint64 created_at_epoch_ms = 10;
+}
+
+enum WeightUnit {
+  WEIGHT_UNIT_UNSPECIFIED = 0;
+  WEIGHT_UNIT_KG = 1;
+  WEIGHT_UNIT_LB = 2;
+}
+
+enum Laterality {
+  LATERALITY_UNSPECIFIED = 0;
+  LATERALITY_BILATERAL = 1;
+  LATERALITY_LEFT = 2;
+  LATERALITY_RIGHT = 3;
+  LATERALITY_EITHER = 4;
+}
+
+enum CameraView {
+  CAMERA_VIEW_UNSPECIFIED = 0;
+  CAMERA_VIEW_FRONT = 1;
+  CAMERA_VIEW_FRONT_DIAGONAL = 2;
+  CAMERA_VIEW_SIDE = 3;
+}
+
+message SessionCommand {
+  Kind kind = 1;
+  string session_id = 2;
+  string reason = 3;
+
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    KIND_ARM = 1;
+    KIND_START = 2;
+    KIND_PAUSE = 3;
+    KIND_RESUME = 4;
+    KIND_STOP = 5;
+    KIND_COMPLETE = 6;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Telemetry. Low rate by design.
+// ---------------------------------------------------------------------------
+
+message ReadinessUpdate {
+  string status = 1;
+  repeated string details = 2;
+  uint32 confidence_per_mille = 3;
+}
+
+// One durable log entry. `session_id` + `sequence_number` is the unique key;
+// delivering the same pair twice is idempotent on the controller.
+message WorkoutEventMessage {
+  string session_id = 1;
+  uint64 sequence_number = 2;
+  uint64 monotonic_timestamp_ms = 3;
+  // The event payload as canonical JSON, matching the on-device log and the
+  // golden fixtures. One representation, so a replayed event, a stored event
+  // and a test expectation are byte-identical.
+  string payload_json = 4;
+}
+
+message DeviceStatus {
+  uint32 battery_per_mille = 1;
+  ThermalState thermal = 2;
+  bool charging = 3;
+  uint32 analyzed_fps_centi = 4;
+  uint32 inference_p95_ms = 5;
+  string session_state = 6;
+  uint64 highest_sequence = 7;
+
+  enum ThermalState {
+    THERMAL_UNSPECIFIED = 0;
+    THERMAL_NOMINAL = 1;
+    THERMAL_FAIR = 2;
+    THERMAL_SERIOUS = 3;
+    THERMAL_CRITICAL = 4;
+  }
+}
+
+// Central -> peripheral: everything up to and including this sequence number is
+// durably stored on the controller.
+message Acknowledgement {
+  string session_id = 1;
+  uint64 acknowledged_through = 2;
+}
+
+// Central -> peripheral: resend from here. Sent on reconnect.
+message ReplayRequest {
+  string session_id = 1;
+  uint64 after_sequence = 2;
+  uint32 max_events = 3;
+}
+
+message ProtocolError {
+  Code code = 1;
+  string detail = 2;
+
+  enum Code {
+    CODE_UNSPECIFIED = 0;
+    CODE_INCOMPATIBLE_VERSION = 1;
+    CODE_NOT_PAIRED = 2;
+    CODE_BAD_MAC = 3;
+    CODE_REPLAYED_COUNTER = 4;
+    CODE_MALFORMED = 5;
+    CODE_TOO_LARGE = 6;
+    CODE_UNKNOWN_SESSION = 7;
+    CODE_ILLEGAL_STATE = 8;
+    CODE_PAIRING_EXPIRED = 9;
+    CODE_PAIRING_CONSUMED = 10;
+    CODE_BAD_PROOF = 11;
+  }
+}
