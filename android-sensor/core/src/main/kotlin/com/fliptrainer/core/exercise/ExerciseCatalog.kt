@@ -46,7 +46,10 @@ object ExerciseCatalog {
     fun evaluatorFor(id: String): BaseExerciseEvaluator {
         val definition = load(id)
         return when (id) {
-            "standing_dumbbell_curl" -> StandingCurlEvaluator(definition)
+            StandingCurlEvaluator.ID -> StandingCurlEvaluator(definition)
+            GobletSquatEvaluator.ID -> GobletSquatEvaluator(definition)
+            RomanianDeadliftEvaluator.ID -> RomanianDeadliftEvaluator(definition)
+            ShoulderPressEvaluator.ID -> ShoulderPressEvaluator(definition)
             else -> error("no evaluator registered for exercise '$id'")
         }
     }

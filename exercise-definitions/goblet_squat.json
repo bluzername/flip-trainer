@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "id": "goblet_squat",
+  "version": "1.0.0",
+  "name": "Goblet squat",
+  "instructions": "Hold one dumbbell vertically against your chest. Stand at a slight angle to the camera so both knees are visible, with your whole body including feet in frame. Squat down under control, then stand back up.",
+  "preferredView": "FRONT_DIAGONAL",
+  "laterality": "BILATERAL",
+  "requiredLandmarks": [
+    "LEFT_SHOULDER",
+    "RIGHT_SHOULDER",
+    "LEFT_HIP",
+    "RIGHT_HIP",
+    "LEFT_KNEE",
+    "RIGHT_KNEE",
+    "LEFT_ANKLE",
+    "RIGHT_ANKLE"
+  ],
+  "readiness": {
+    "minLandmarkConfidence": 0.5,
+    "minSubjectHeightFraction": 0.4,
+    "maxSubjectHeightFraction": 0.94,
+    "frameMarginFraction": 0.02,
+    "enforceView": true,
+    "requiredOrientation": "ANY"
+  },
+  "cycle": {
+    "restBelow": 0.15,
+    "outboundAbove": 0.28,
+    "apexAbove": 0.78,
+    "minPeakProgress": 0.8,
+    "minReversalDelta": 0.06,
+    "minPhaseDurationMs": 150,
+    "minRepDurationMs": 900,
+    "maxRepDurationMs": 15000,
+    "repCooldownMs": 300,
+    "maxDropoutMs": 450,
+    "outboundIsConcentric": false
+  },
+  "filter": {
+    "type": "medianEma",
+    "window": 3,
+    "alpha": 0.35
+  },
+  "range": {
+    "restValue": 172.0,
+    "apexValue": 85.0
+  },
+  "cues": [
+    {
+      "id": "incomplete_depth",
+      "message": "Try to sit a little lower — you are stopping above your usual depth",
+      "threshold": 0.9,
+      "minConfidence": 0.6,
+      "debounceMs": 350,
+      "enabled": true
+    },
+    {
+      "id": "lateral_asymmetry",
+      "message": "One knee is bending noticeably more than the other",
+      "threshold": 18.0,
+      "minConfidence": 0.65,
+      "debounceMs": 500,
+      "enabled": true
+    }
+  ],
+  "knownLimitations": [
+    "EXPERIMENTAL: no physical validation has been performed. Thresholds are engineering guesses, not measured values.",
+    "Depth is inferred from knee angle, not from hip-versus-knee height, so a very upright squat with long femurs may score differently from a coached 'parallel' call.",
+    "The asymmetry cue compares knee angles in the image plane. It is only meaningful in the front-diagonal view and abstains elsewhere.",
+    "Heel lift, knee valgus and spinal position are not measured at all. Silence from this exercise is not a statement that the squat was good."
+  ],
+  "unsupportedViews": [
+    "SIDE: the far leg is occluded, so a bilateral knee angle cannot be measured and the asymmetry cue is meaningless.",
+    "FRONT (square on): knee flexion is heavily foreshortened; depth reads as shallower than it is."
+  ]
+}

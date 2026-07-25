@@ -174,6 +174,32 @@ abstract class BaseExerciseEvaluator(
     ): List<CueObservation>
 
     /**
+     * The "you stopped short" cue, shared by every exercise in the catalog.
+     *
+     * Judged during [judgeDuring] — the return half by default — because that is the first moment
+     * the repetition's peak is known but the repetition is not yet over, so the athlete can act on
+     * it before starting the next one.
+     *
+     * The cue's `threshold` is a progress fraction. It sits *above* the definition's
+     * `minPeakProgress`, so it covers the band where a repetition still counts but was shallow;
+     * anything below `minPeakProgress` is rejected outright and reported as such.
+     */
+    protected fun observeRangeShortfall(
+        cueId: String,
+        phase: MovementPhase,
+        judgeDuring: MovementPhase = MovementPhase.RETURN,
+    ): CueObservation {
+        val spec = definition.cue(cueId) ?: return CueObservation.abstained(cueId)
+        if (phase != judgeDuring) return CueObservation.abstained(cueId)
+        val peak = currentPeakProgress
+        return CueObservation(
+            id = cueId,
+            violated = peak < spec.threshold,
+            evidence = mapOf("peakPerMille" to Quantize.perMille(peak)),
+        )
+    }
+
+    /**
      * Range-of-motion score for a completed repetition, `0..1`.
      *
      * Defaults to the peak progress reached, which is exactly "how much of the intended range did

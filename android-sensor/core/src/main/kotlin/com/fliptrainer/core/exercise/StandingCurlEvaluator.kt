@@ -52,23 +52,11 @@ class StandingCurlEvaluator(
         frame: PoseFrame,
         phase: MovementPhase,
         progress: Double,
-    ): List<CueObservation> = listOf(observeIncompleteRange(phase), observeUpperArmDrift(frame, phase))
-
-    /**
-     * Judged on the way down, once the repetition's peak is known but before it is over, so the
-     * athlete hears it in time to change the next one.
-     */
-    private fun observeIncompleteRange(phase: MovementPhase): CueObservation {
-        val spec = definition.cue(CUE_INCOMPLETE_RANGE) ?: return CueObservation.abstained(CUE_INCOMPLETE_RANGE)
-        if (phase != MovementPhase.RETURN) return CueObservation.abstained(spec.id)
-
-        val peak = currentPeakProgress
-        return CueObservation(
-            id = spec.id,
-            violated = peak < spec.threshold,
-            evidence = mapOf("peakPerMille" to Quantize.perMille(peak)),
+    ): List<CueObservation> =
+        listOf(
+            observeRangeShortfall(CUE_INCOMPLETE_RANGE, phase),
+            observeUpperArmDrift(frame, phase),
         )
-    }
 
     /**
      * Deviation of the upper arm from vertical while lifting.

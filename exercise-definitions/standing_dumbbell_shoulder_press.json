@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "id": "standing_dumbbell_shoulder_press",
+  "version": "1.0.0",
+  "name": "Standing dumbbell shoulder press",
+  "instructions": "Stand facing the camera with the dumbbells racked at shoulder height and your upper body in frame. Press both weights overhead until the arms are straight, then lower them back to the shoulders under control.",
+  "preferredView": "FRONT",
+  "laterality": "BILATERAL",
+  "requiredLandmarks": [
+    "LEFT_SHOULDER",
+    "RIGHT_SHOULDER",
+    "LEFT_ELBOW",
+    "RIGHT_ELBOW",
+    "LEFT_WRIST",
+    "RIGHT_WRIST",
+    "LEFT_HIP",
+    "RIGHT_HIP"
+  ],
+  "readiness": {
+    "minLandmarkConfidence": 0.5,
+    "minSubjectHeightFraction": 0.18,
+    "maxSubjectHeightFraction": 0.9,
+    "frameMarginFraction": 0.02,
+    "enforceView": true,
+    "requiredOrientation": "ANY"
+  },
+  "cycle": {
+    "restBelow": 0.15,
+    "outboundAbove": 0.27,
+    "apexAbove": 0.8,
+    "minPeakProgress": 0.82,
+    "minReversalDelta": 0.06,
+    "minPhaseDurationMs": 130,
+    "minRepDurationMs": 700,
+    "maxRepDurationMs": 12000,
+    "repCooldownMs": 250,
+    "maxDropoutMs": 400,
+    "outboundIsConcentric": true
+  },
+  "filter": {
+    "type": "medianEma",
+    "window": 3,
+    "alpha": 0.4
+  },
+  "range": {
+    "restValue": -0.05,
+    "apexValue": 1.15
+  },
+  "cues": [
+    {
+      "id": "incomplete_overhead_range",
+      "message": "Press all the way up — the arms are not finishing straight overhead",
+      "threshold": 0.92,
+      "minConfidence": 0.6,
+      "debounceMs": 300,
+      "enabled": true
+    },
+    {
+      "id": "press_timing_asymmetry",
+      "message": "One arm is leading the other on the way up",
+      "threshold": 0.18,
+      "minConfidence": 0.65,
+      "debounceMs": 250,
+      "enabled": true
+    }
+  ],
+  "knownLimitations": [
+    "EXPERIMENTAL: no physical validation has been performed. Thresholds are engineering guesses, not measured values.",
+    "Progress is wrist height above the shoulder in body-scale units, so a shrug that raises the shoulders slightly reduces measured progress even when the arms did lock out.",
+    "Overhead lockout is inferred from wrist height, not elbow extension; a press finished with bent arms but high hands can still score as complete.",
+    "Lumbar extension (leaning back to press) is not measured and no claim is made about it.",
+    "The asymmetry cue measures height difference at a moment in time, so a deliberate alternating press will trip it.",
+    "FRAME WIDTH IS THE BINDING CONSTRAINT for this exercise. At the mid-point of the press the hands are roughly 2.4 torso-lengths apart, so on a 9:16 portrait frame the athlete must stand far enough back that the torso spans under about 0.22 of frame height — which is close to the readiness floor. This is the strongest candidate in the catalog for the ultrawide revisit trigger (plan §13); it needs a measurement on the Flip5 before anything is decided."
+  ],
+  "unsupportedViews": [
+    "SIDE: the far arm is occluded, so neither a bilateral measurement nor the asymmetry cue is possible.",
+    "Any view where the wrists leave the top of the frame at lockout — the readiness gate rejects this as clipping."
+  ]
+}
