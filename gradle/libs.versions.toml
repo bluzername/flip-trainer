@@ -6,8 +6,8 @@ serialization = "1.11.0"
 junit = "6.1.3"
 ktlint-tool = "1.8.0"
 ktlint-plugin = "14.2.0"
-protobuf-java = "4.29.3"
-protobuf-plugin = "0.9.4"
+protobuf-java = "4.36.1"
+protobuf-plugin = "0.10.0"
 
 # Android-only versions. Not resolvable without an Android SDK + dl.google.com access.
 agp = "8.7.3"
