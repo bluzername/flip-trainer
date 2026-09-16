@@ -60,7 +60,12 @@ else
   bad "java not found" "brew install --cask temurin"
   BLOCKERS=$((BLOCKERS + 1))
 fi
-[ -x ./gradlew ] && ok "Gradle wrapper present" || { bad "./gradlew missing"; BLOCKERS=$((BLOCKERS + 1)); }
+if [ -x ./gradlew ]; then
+  ok "Gradle wrapper present"
+else
+  bad "./gradlew missing"
+  BLOCKERS=$((BLOCKERS + 1))
+fi
 
 # ---------------------------------------------------------------- android
 head_ "Android (Galaxy Z Flip5)"
@@ -84,7 +89,7 @@ if command -v adb >/dev/null 2>&1; then
       REL=$(adb -s "$d" shell getprop ro.build.version.release 2>/dev/null | tr -d '\r')
       SDKV=$(adb -s "$d" shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r')
       ok "Device $d — $MODEL, Android $REL (API $SDKV)"
-      printf "      ${DIM}record these three values in docs/DEVICE_NOTES.md${OFF}\n"
+      printf '      %brecord these three values in docs/DEVICE_NOTES.md%b\n' "$DIM" "$OFF"
     done
   else
     UNAUTH=$(adb devices 2>/dev/null | awk 'NR>1 && $2=="unauthorized" {print $1}')
@@ -158,10 +163,16 @@ if [ "$BLOCKERS" -gt 0 ]; then
 fi
 
 ok "JVM suite can run: ./gradlew verify  (expect 274 tests, 0 failures)"
-[ "$ANDROID_READY" = "1" ] && ok "Android build should work: ./gradlew :android-sensor:app:assembleDebug" \
-                           || warn "Android build blocked — see above"
-[ "$IOS_READY" = "1" ] && ok "iOS build should work: cd ios-app && xcodegen generate && open FlipTrainer.xcodeproj" \
-                       || warn "iOS build blocked — see above"
+if [ "$ANDROID_READY" = "1" ]; then
+  ok "Android build should work: ./gradlew :android-sensor:app:assembleDebug"
+else
+  warn "Android build blocked - see above"
+fi
+if [ "$IOS_READY" = "1" ]; then
+  ok "iOS build should work: cd ios-app && xcodegen generate && open FlipTrainer.xcodeproj"
+else
+  warn "iOS build blocked - see above"
+fi
 
 cat <<'NEXT'
 
