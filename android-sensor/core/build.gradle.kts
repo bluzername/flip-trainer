@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-/**
+/*
  * Pure JVM. No Android, no CameraX, no MediaPipe, no Room.
  *
  * Everything that decides something — geometry, readiness, phase machines, rep counting, session

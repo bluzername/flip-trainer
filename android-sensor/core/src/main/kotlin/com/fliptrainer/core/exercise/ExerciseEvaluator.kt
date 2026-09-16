@@ -313,7 +313,7 @@ abstract class BaseExerciseEvaluator(
     ) {
         for (signal in signals) {
             when (signal) {
-                is CycleSignal.PhaseEntered ->
+                is CycleSignal.PhaseEntered -> {
                     into +=
                         event(
                             nowMs,
@@ -323,6 +323,7 @@ abstract class BaseExerciseEvaluator(
                                 label = definition.cycle.label(signal.phase),
                             ),
                         )
+                }
 
                 is CycleSignal.RepCompleted -> {
                     val m = signal.measurement
@@ -341,15 +342,17 @@ abstract class BaseExerciseEvaluator(
                         )
                 }
 
-                is CycleSignal.RepRejected ->
+                is CycleSignal.RepRejected -> {
                     into +=
                         event(
                             nowMs,
                             EventPayload.RepRejected(signal.reason, Quantize.perMille(signal.peakProgress)),
                         )
+                }
 
-                is CycleSignal.CycleAborted ->
+                is CycleSignal.CycleAborted -> {
                     into += event(nowMs, EventPayload.DeviceWarning("cycleAborted", signal.reason))
+                }
             }
         }
     }
