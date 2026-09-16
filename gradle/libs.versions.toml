@@ -1,8 +1,8 @@
 [versions]
 # Pinned deliberately. Bump only with a DECISIONS.md entry.
 kotlin = "2.4.20"
-coroutines = "1.10.2"
-serialization = "1.8.1"
+coroutines = "1.11.0"
+serialization = "1.11.0"
 junit = "5.11.4"
 ktlint-tool = "1.8.0"
 ktlint-plugin = "14.2.0"
