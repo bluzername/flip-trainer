@@ -3,7 +3,7 @@ plugins {
     application
 }
 
-/**
+/*
  * Offline CLI: replay a recorded landmark trace through an exercise evaluator and
  * print the resulting event stream. This is how evaluator changes are reviewed
  * without a phone in hand.

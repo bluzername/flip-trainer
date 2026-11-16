@@ -46,7 +46,7 @@ sudo xcode-select -s /Applications/Xcode.app
 
 # 4. Point the build at the SDK (either works; local.properties is gitignored)
 echo "sdk.dir=$(brew --prefix)/share/android-commandlinetools" > local.properties
-sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+sdkmanager "platform-tools" "platforms;android-37" "build-tools;36.0.0"   # compileSdk 37, AGP 9.4 default build-tools
 
 # 5. The MediaPipe model — not committed, and the app crashes without it
 cd android-sensor/app/src/main/assets

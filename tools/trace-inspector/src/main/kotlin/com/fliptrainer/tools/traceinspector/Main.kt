@@ -110,7 +110,10 @@ fun main(args: Array<String>) {
     val result = TraceReplayRunner(definition).run(trace, ExerciseCatalog.evaluatorFor(definition.id), manifest)
 
     when (options.format) {
-        "events" -> print(result.renderEvents())
+        "events" -> {
+            print(result.renderEvents())
+        }
+
         else -> {
             print(result.summarize())
             trace.header.humanRepCount?.let { human ->
@@ -151,12 +154,30 @@ private fun parseArgs(args: Array<String>): Options? {
     var i = 0
     while (i < args.size) {
         when (val arg = args[i]) {
-            "--trace" -> trace = args.getOrNull(++i) ?: return null
-            "--exercise" -> exercise = args.getOrNull(++i) ?: return null
-            "--format" -> format = args.getOrNull(++i) ?: return null
-            "--target-reps" -> targetReps = args.getOrNull(++i)?.toIntOrNull() ?: return null
-            "--list" -> list = true
-            "--help", "-h" -> return null
+            "--trace" -> {
+                trace = args.getOrNull(++i) ?: return null
+            }
+
+            "--exercise" -> {
+                exercise = args.getOrNull(++i) ?: return null
+            }
+
+            "--format" -> {
+                format = args.getOrNull(++i) ?: return null
+            }
+
+            "--target-reps" -> {
+                targetReps = args.getOrNull(++i)?.toIntOrNull() ?: return null
+            }
+
+            "--list" -> {
+                list = true
+            }
+
+            "--help", "-h" -> {
+                return null
+            }
+
             else -> {
                 System.err.println("Unknown argument: $arg")
                 return null

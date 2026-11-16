@@ -4,7 +4,7 @@
 Current session:            Sessions 1-11 complete (software); 12-15 blocked on hardware
 Current objective:          Hand off to a session with a Flip5 and an iPhone attached
 Last known green revision:  HEAD (./gradlew verify passes)
-Verification performed:     ./gradlew verify — 274 JVM tests, 0 failures, ktlint clean
+Verification performed:     ./gradlew verify (Gradle 9.7.1, JDK 17) - 274 JVM tests, 0 failures, ktlint 1.8.0 clean
 Physical-device evidence:   NONE. No Flip5, no iPhone, no Android SDK, no Xcode.
 Known failures:             none in the JVM suite
 Blockers:                   Session 0 hardware prep has not been done (user-owned)
@@ -13,8 +13,10 @@ Next exact action:          Session 0, then the two physical protocols in docs/p
 
 ## What is actually verified
 
-`./gradlew verify` compiles, lints and runs **274 tests** across `:android-sensor:core`,
-`:protocol` and `:tools:trace-inspector`. Those results are real. They cover:
+`./gradlew verify` compiles and lints `:android-sensor:core`, `:protocol` and
+`:tools:trace-inspector`, and runs **274 tests** (213 in core, 61 in protocol; the inspector CLI
+has no tests of its own). CI runs the same command on every push (`.github/workflows/ci.yml`).
+Those results are real. They cover:
 
 | Layer | Verified |
 | --- | --- |

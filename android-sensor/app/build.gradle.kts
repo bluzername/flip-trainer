@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
@@ -12,14 +11,20 @@ plugins {
  *
  * This module is excluded from the build unless an Android SDK is configured; see
  * settings.gradle.kts.
+ *
+ * AGP 9 compiles Kotlin itself (built-in Kotlin), so the kotlin-android plugin is not applied
+ * and compiler options live in the top-level `kotlin {}` block below, not in `android {}`.
  */
 android {
     namespace = "com.fliptrainer.sensor"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.fliptrainer.sensor"
         minSdk = 30
+        // targetSdk deliberately stays at 35 while the app is unverified: raising it changes
+        // foreground-service and BLE permission behaviour at runtime, which nobody can test yet.
+        // Raise it in the same session that first runs the app on the Flip5 (ADR-0009).
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.0-dev"
@@ -41,10 +46,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
     buildFeatures {
         compose = true
     }
@@ -54,6 +55,12 @@ android {
     }
 
     sourceSets["main"].kotlin.srcDir("src/main/kotlin")
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
 }
 
 dependencies {

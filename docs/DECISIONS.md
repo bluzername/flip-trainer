@@ -228,3 +228,68 @@ One representation means a stored event, a replayed event and a test expectation
 
 **Revisit trigger** The payload grows large enough that JSON overhead matters on BLE, or a consumer
 appears that can parse protobuf but not the payload JSON.
+
+---
+
+## ADR-0009 - Toolchain and dependency refresh; Android-side versions are unverified by definition
+
+**Date** 2026-09-16
+
+**Decision**
+The pinned catalog (ADR-0002) is bumped in one reviewed pass rather than drifting for another
+year. Two classes of version now exist in `gradle/libs.versions.toml` and they carry different
+guarantees:
+
+| Class | Versions | Guarantee |
+| --- | --- | --- |
+| JVM (verified) | Gradle 9.7.1 (wrapper, with `distributionSha256Sum`), Kotlin 2.4.20, KSP 2.3.12, coroutines 1.11.0, serialization 1.11.0, JUnit 6.1.3, ktlint 1.8.0 / ktlint-gradle 14.2.0, protobuf 4.36.1 / protobuf-gradle-plugin 0.10.0 | `./gradlew verify` passes: 274 tests, 0 failures, no Gradle deprecation warnings under `--warning-mode all` |
+| Android (unverified) | AGP 9.4.0, `compileSdk` 37, androidx-core 1.19.0, lifecycle 2.11.0, activity-compose 1.13.0, compose-bom 2026.09.00, CameraX 1.6.2, Room 2.8.5, MediaPipe tasks-vision 0.10.35, ZXing 3.5.4 | None. `:android-sensor:app` has never compiled (STATUS.md), so these are the newest stable releases at bump time, not versions known to build |
+
+Rule: **every Android-side version is unverified until the app has compiled once.** The session
+that first gets `:android-sensor:app:assembleDebug` green may move any of them, up or down,
+without a new ADR, provided it records in STATUS.md what actually compiled. Until then, CI runs
+`assembleDebug` with `continue-on-error: true` so the first compile happens somewhere
+reproducible without blocking the JVM suite.
+
+Three Android-side choices were made deliberately:
+- **AGP 9.4.0 and built-in Kotlin.** Compose 1.12.1 (BOM 2026.09.00) and androidx-core 1.19.0
+  declare `minCompileSdk=37` and `minAndroidGradlePluginVersion=9.1.0` in their AAR metadata, and
+  AGP 9.4 requires Gradle 9.6+, which the JVM side now satisfies. AGP 9 compiles Kotlin itself, so
+  the `kotlin-android` plugin is dropped and `android.kotlinOptions` becomes `kotlin.compilerOptions`
+  in the app module, per Google's migration guide.
+- **`targetSdk` stays 35** while `compileSdk` moves to 37. Raising the target changes runtime
+  behaviour (foreground-service and BLE permission semantics) that nobody can observe yet. Raise it
+  in the session that first runs the app.
+- **MediaPipe stays on 0.10.x** (0.10.35, not 1.0.0). A major bump of the one pose engine (ADR-0003)
+  with no way to run it is a guess, and ADR-0004 makes a model change invalidate every golden.
+
+**Evidence**
+Each JVM bump was applied on its own and `./gradlew verify` run after it; none had to be reverted.
+ktlint 1.8.0 introduced `when-entry-bracing` and `blank-line-between-when-conditions`, which
+`ktlintFormat` applied mechanically to six source files, and it no longer permits KDoc inside a
+`plugins {}`-level build script block, so two `build.gradle.kts` header comments became plain block
+comments. The old ktlint and protobuf plugins were the source of the "incompatible with Gradle 10"
+deprecation notice; after the bump `--warning-mode all` is silent. Android `minCompileSdk` values
+were read from the published AAR metadata on `dl.google.com`, not guessed.
+
+**Alternatives considered**
+- *Leave everything pinned.* Rejected: KGP 2.1 already warns that Gradle 8.14 is deprecated, and
+  the gap only widens. Pinning (ADR-0002) means deliberate bumps, not no bumps.
+- *Bump only the JVM side.* Rejected: it would leave `compileSdk` 35 next to libraries that cannot
+  possibly be that old by the time the app is compiled, and hide the migration work AGP 9 needs.
+- *MediaPipe 1.0.0.* Deferred, see above.
+- *Regenerate the Gradle wrapper jar.* Not needed: the 8.14.3 wrapper jar downloads and runs 9.7.1
+  unchanged, so only `gradle-wrapper.properties` changed, plus the distribution checksum.
+
+**Consequences**
+- Dependabot (`.github/dependabot.yml`) opens weekly grouped minor/patch PRs for Gradle and Actions.
+  A Dependabot PR that is green on the `jvm` job is verified; one that only touches Android-side
+  versions is not, whatever its status says.
+- The `android` CI job is informational until the module compiles. Do not read its red as a
+  regression, and do not read its green (if it ever appears without a fix) as verification either:
+  check the log.
+
+**Revisit trigger**
+The first session that compiles `:android-sensor:app`. That session should replace the
+"unverified" class in the table above with what actually built, and remove the
+`continue-on-error` from the `android` job.

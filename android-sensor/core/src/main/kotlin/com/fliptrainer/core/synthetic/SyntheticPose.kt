@@ -204,6 +204,7 @@ data class SyntheticPose(
                 points[LandmarkType.LEFT_INDEX] = base + Vec(0.008, 0.0)
                 points[LandmarkType.LEFT_THUMB] = base + Vec(0.0, -0.008)
             }
+
             Side3.RIGHT -> {
                 points[LandmarkType.RIGHT_PINKY] = base + Vec(0.008, 0.0)
                 points[LandmarkType.RIGHT_INDEX] = base + Vec(-0.008, 0.0)
@@ -226,6 +227,7 @@ data class SyntheticPose(
                 points[LandmarkType.LEFT_HEEL] = heel
                 points[LandmarkType.LEFT_FOOT_INDEX] = heel + Vec(toeDirection * proportions.foot, 0.004)
             }
+
             Side3.RIGHT -> {
                 points[LandmarkType.RIGHT_HEEL] = heel
                 points[LandmarkType.RIGHT_FOOT_INDEX] = heel + Vec(toeDirection * proportions.foot, 0.004)

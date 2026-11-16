@@ -92,8 +92,13 @@ class SideSelector(
                 if (ok) listOf(Side.LEFT, Side.RIGHT) else null
             }
 
-            Laterality.LEFT -> singleSide(frame, Side.LEFT, minConfidence)
-            Laterality.RIGHT -> singleSide(frame, Side.RIGHT, minConfidence)
+            Laterality.LEFT -> {
+                singleSide(frame, Side.LEFT, minConfidence)
+            }
+
+            Laterality.RIGHT -> {
+                singleSide(frame, Side.RIGHT, minConfidence)
+            }
 
             Laterality.EITHER -> {
                 val sticky = resolved

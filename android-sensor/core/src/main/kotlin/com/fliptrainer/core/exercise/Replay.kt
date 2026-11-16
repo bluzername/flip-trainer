@@ -130,24 +130,59 @@ data class ReplayResult(
 
     private fun describe(payload: EventPayload): String =
         when (payload) {
-            is EventPayload.SessionAccepted ->
+            is EventPayload.SessionAccepted -> {
                 "sessionAccepted ${payload.exerciseId}@${payload.exerciseDefinitionVersion}"
-            is EventPayload.ReadinessChanged -> "readiness ${payload.status} ${payload.details.joinToString(",")}"
-            EventPayload.SetStarted -> "setStarted"
-            is EventPayload.PhaseChanged -> "phase ${payload.previousPhase}->${payload.phase} (${payload.label})"
-            is EventPayload.RepCompleted ->
+            }
+
+            is EventPayload.ReadinessChanged -> {
+                "readiness ${payload.status} ${payload.details.joinToString(",")}"
+            }
+
+            EventPayload.SetStarted -> {
+                "setStarted"
+            }
+
+            is EventPayload.PhaseChanged -> {
+                "phase ${payload.previousPhase}->${payload.phase} (${payload.label})"
+            }
+
+            is EventPayload.RepCompleted -> {
                 "REP ${payload.repNumber} ${payload.repDurationMs}ms " +
                     "con=${payload.concentricDurationMs} ecc=${payload.eccentricDurationMs} " +
                     "rom=${payload.rangeOfMotionPerMille} conf=${payload.confidencePerMille} " +
                     "cues=${payload.cues.joinToString(",")}"
+            }
 
-            is EventPayload.RepRejected -> "rejected ${payload.reason} peak=${payload.peakRangeOfMotionPerMille}"
-            is EventPayload.CueRaised -> "cue+ ${payload.cueId} ${payload.evidence}"
-            is EventPayload.CueCleared -> "cue- ${payload.cueId}"
-            EventPayload.SetPaused -> "setPaused"
-            EventPayload.SetResumed -> "setResumed"
-            is EventPayload.SetCompleted -> "setCompleted reps=${payload.totalReps}"
-            is EventPayload.SetAborted -> "setAborted ${payload.reason}"
-            is EventPayload.DeviceWarning -> "warn ${payload.code}: ${payload.message}"
+            is EventPayload.RepRejected -> {
+                "rejected ${payload.reason} peak=${payload.peakRangeOfMotionPerMille}"
+            }
+
+            is EventPayload.CueRaised -> {
+                "cue+ ${payload.cueId} ${payload.evidence}"
+            }
+
+            is EventPayload.CueCleared -> {
+                "cue- ${payload.cueId}"
+            }
+
+            EventPayload.SetPaused -> {
+                "setPaused"
+            }
+
+            EventPayload.SetResumed -> {
+                "setResumed"
+            }
+
+            is EventPayload.SetCompleted -> {
+                "setCompleted reps=${payload.totalReps}"
+            }
+
+            is EventPayload.SetAborted -> {
+                "setAborted ${payload.reason}"
+            }
+
+            is EventPayload.DeviceWarning -> {
+                "warn ${payload.code}: ${payload.message}"
+            }
         }
 }

@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  jvm:
+    name: JVM verify (compile, ktlint, tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Verify
+        run: env -u ANDROID_HOME -u ANDROID_SDK_ROOT ./gradlew verify --no-daemon
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-results
+          path: "**/build/test-results/test/*.xml"
+          if-no-files-found: ignore
+
+  android:
+    name: Android assembleDebug (unverified module)
+    runs-on: ubuntu-latest
+    # :android-sensor:app has never been through a compiler (docs/STATUS.md). This job exists so
+    # that the first compile happens somewhere reproducible, but it must not block the JVM suite:
+    # until the module compiles once, its failures are expected, not regressions.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Assemble debug APK
+        # ubuntu-latest runners preinstall the Android SDK and export ANDROID_HOME /
+        # ANDROID_SDK_ROOT, which is what settings.gradle.kts keys on to include the module.
+        run: ./gradlew :android-sensor:app:assembleDebug --no-daemon
+
+  shell:
+    name: shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck scripts/doctor.sh
+        run: shellcheck scripts/doctor.sh
