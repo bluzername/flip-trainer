@@ -18,7 +18,7 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
       - name: Verify
         run: env -u ANDROID_HOME -u ANDROID_SDK_ROOT ./gradlew verify --no-daemon
       - name: Upload test results
@@ -42,7 +42,7 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
       - name: Assemble debug APK
         # ubuntu-latest runners preinstall the Android SDK and export ANDROID_HOME /
         # ANDROID_SDK_ROOT, which is what settings.gradle.kts keys on to include the module.
