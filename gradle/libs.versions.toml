@@ -1,20 +1,20 @@
 [versions]
 # Pinned deliberately. Bump only with a DECISIONS.md entry.
-kotlin = "2.4.20"
+kotlin = "2.4.21"
 coroutines = "1.11.0"
-serialization = "1.11.0"
+serialization = "1.13.0"
 junit = "6.1.3"
 ktlint-tool = "1.8.0"
 ktlint-plugin = "14.2.0"
-protobuf-java = "4.36.1"
-protobuf-plugin = "0.10.0"
+protobuf-java = "4.36.2"
+protobuf-plugin = "0.10.1"
 
 # Android-only versions. Not resolvable without an Android SDK + dl.google.com access.
 # UNVERIFIED: :android-sensor:app has never compiled, so these are the newest stable releases
 # at the time of the bump, not versions that are known to build (ADR-0009). mediapipe stays on
 # the 0.10.x line on purpose; 1.0.0 is a major release nobody here can compile against.
-agp = "9.4.0"
-androidx-core = "1.19.0"
+agp = "9.5.1"
+androidx-core = "1.19.1"
 androidx-lifecycle = "2.11.0"
 androidx-activity = "1.13.0"
 compose-bom = "2026.09.00"
@@ -62,4 +62,4 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-plugin" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version = "2.3.12" }
+ksp = { id = "com.google.devtools.ksp", version = "2.3.14" }
