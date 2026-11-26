@@ -13,12 +13,12 @@ protobuf-plugin = "0.10.1"
 # UNVERIFIED: :android-sensor:app has never compiled, so these are the newest stable releases
 # at the time of the bump, not versions that are known to build (ADR-0009). mediapipe stays on
 # the 0.10.x line on purpose; 1.0.0 is a major release nobody here can compile against.
-agp = "9.5.1"
+agp = "9.5.3"
 androidx-core = "1.19.1"
 androidx-lifecycle = "2.11.0"
 androidx-activity = "1.13.0"
-compose-bom = "2026.09.00"
-camerax = "1.6.2"
+compose-bom = "2026.11.01"
+camerax = "1.7.0"
 mediapipe = "0.10.35"
 room = "2.8.5"
 zxing = "3.5.4"
