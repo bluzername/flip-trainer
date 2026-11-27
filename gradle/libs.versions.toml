@@ -19,7 +19,7 @@ androidx-lifecycle = "2.11.0"
 androidx-activity = "1.13.0"
 compose-bom = "2026.11.01"
 camerax = "1.7.0"
-mediapipe = "0.10.35"
+mediapipe = "1.2.3"
 room = "2.8.5"
 zxing = "3.5.4"
 
